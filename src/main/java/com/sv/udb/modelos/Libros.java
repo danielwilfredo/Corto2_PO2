@@ -41,11 +41,10 @@ public class Libros implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
+
     @Column(name = "codi_libr")
     private Integer codiLibr;
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 250)
     @Column(name = "nomb_libr")
     private String nombLibr;

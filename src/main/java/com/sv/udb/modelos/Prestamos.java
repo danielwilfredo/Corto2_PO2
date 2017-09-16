@@ -39,8 +39,7 @@ public class Prestamos implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "codi_pres")
+   @Column(name = "codi_pres")
     private Integer codiPres;
     @Column(name = "fech_pres")
     @Temporal(TemporalType.TIMESTAMP)

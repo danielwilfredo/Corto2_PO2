@@ -12,7 +12,7 @@ and open the template in the editor.
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>GUIA05_POO2:::UDB</title>
+        <title>CORTO 2</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <!--Plugins Frameworks-->
         <h:outputScript library="js" name="jquery-3.1.0.min.js" />
@@ -32,7 +32,7 @@ and open the template in the editor.
         <h:outputScript library="js" name="bootstrap-tooltip.js"/>
         <h:outputScript library="js" name="bootstrap-confirmation.js"/>
         <!--Plugins para tipos-->
-        <h:outputScript library="js" name="custom/prestamo.js"/>
+        <h:outputScript library="js" name="custom/libros.js"/>
     </h:head>
     <h:body>
         <div class="row">
@@ -41,19 +41,19 @@ and open the template in the editor.
                     <div id="barrBtns">
                         <div class="btn-group btn-group-sm">
                             <h:form id="toolBar">
-                                <p:remoteCommand name="consPres" actionListener="#{presBean.cons()}"
+                                <p:remoteCommand name="consLibr" actionListener="#{librosBean.cons()}"
                                                  update="formTest"/>
-                                <p:remoteCommand name="elimPres" actionListener="#{presBean.elim()}" update="contTabl formTest" 
-                                                         oncomplete="INIT_OBJE_PRES()" global="true"/>
+                                <p:remoteCommand name="elimLibr" actionListener="#{librosBean.elim()}" update="contTabl formTest" 
+                                                         oncomplete="INIT_OBJE_LIBR()" global="true"/>
                                 <h:commandLink class="btn btn-success btn-sm" id="btonNuev">
                                     <i class="fa fa-plus"/>
-                                    <p:ajax listener="#{presBean.nuev()}" update="formTest" global="true"/>
-                                    Realizar Prestamo
+                                    <p:ajax listener="#{librosBean.nuev()}" update="formTest" global="true"/>
+                                    Agregar registro
                                 </h:commandLink>
                             </h:form>
                         </div>
                     </div>
-                    <h:dataTable id="tablPres" value="#{presBean.listPres}"
+                    <h:dataTable id="tablLibro" value="#{librosBean.listLibro}"
                                 var="fila" class="boottable" pt:data-toolbar="#barrBtns"
                                 styleClass="table-hover table-bordered table-condensed table-striped table-responsive"
                                 pt:data-show-refresh="false" pt:data-show-toggle="false" pt:data-show-columns="false" 
@@ -64,23 +64,27 @@ and open the template in the editor.
                         </h:column>
                         <h:column pt:data-align="right" pt:data-sortable="true" pt:data-field="id" pt:data-visible="false">
                             <f:facet name="header">Código</f:facet>
-                            <h:outputText value="#{fila.codiPres}"/>
+                            <h:outputText value="#{fila.codiLibr}"/>
                         </h:column>
                         <h:column pt:data-sortable="true" pt:data-field="nombLibr">
-                            <f:facet name="header">Libro</f:facet>
-                            <h:outputText value="#{fila.codiLibr.nombLibr}"/>
+                            <f:facet name="header">Nombre Libro</f:facet>
+                            <h:outputText value="#{fila.nombLibr}"/>
                         </h:column>
-                                                <h:column pt:data-sortable="true" pt:data-field="nombUsua">
-                            <f:facet name="header">Usuario</f:facet>
-                            <h:outputText value="#{fila.codiUsua.nombUsua}"/>
+                        <h:column pt:data-sortable="true" pt:data-field="nombAuto">
+                            <f:facet name="header">Nombre Autor</f:facet>
+                            <h:outputText value="#{fila.autoLibr}"/>
                         </h:column>
-                                                <h:column pt:data-sortable="true" pt:data-field="fechaPres">
-                            <f:facet name="header">Fecha Prestamo</f:facet>
-                            <h:outputText value="#{fila.fechPres}"/>
+                        <h:column pt:data-sortable="true" pt:data-field="gene">
+                            <f:facet name="header">Genero</f:facet>
+                            <h:outputText value="#{fila.geneLibr}"/>
                         </h:column>
-                                                <h:column pt:data-sortable="true" pt:data-field="fechaDevo">
-                            <f:facet name="header">Fecha Devolucion</f:facet>
-                            <h:outputText value="#{fila.fechDevo}"/>
+                        <h:column pt:data-sortable="true" pt:data-field="anio">
+                            <f:facet name="header">Año libro</f:facet>
+                            <h:outputText value="#{fila.anioLibr}"/>
+                        </h:column>
+                        <h:column pt:data-sortable="true" pt:data-field="esta">
+                            <f:facet name="header">Estado Libro</f:facet>
+                            <h:outputText value="#{fila.estaLibr}"/>
                         </h:column>
                     </h:dataTable>
                 </h:panelGroup>
@@ -88,60 +92,73 @@ and open the template in the editor.
         </div>
         <div class="row">
             <!-- Modal -->
-            <div class="modal fade" id="modaFormPres" role="dialog">
+            <div class="modal fade" id="modaFormLibr" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <h:form id="formTest">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">X</button>
-                                <h4 class="modal-title">Prestamo y Devolucion de libros</h4>
+                                <h4 class="modal-title">Mantenimiento de Libros</h4>
                             </div>
                             <div class="modal-body">
                                 <fieldset>
                                     <div class="input-group input-group-xs">
-                                        <h:outputLabel  for="codiPres" value="Codigo Libro: "/>
-                                        <h:inputText id="codiPres" class="form-control" value="#{presBean.objePres.codiPres}" />
-                                        <h:message for="codiPres" errorClass="badge badge-danger" />
+                                        <h:outputLabel  for="codiLibr" value="Codigo Libro: "/>
+                                        <h:inputText id="codiLibr" class="form-control" value="#{librosBean.objeLibro.codiLibr}" />
+                                        <h:message for="codiLibr" errorClass="badge badge-danger" />
                                     </div>
                                 </fieldset>
                                 <fieldset>
                                     <div class="input-group input-group-xs">
-                                        <h:outputLabel  for="Libro" value="Libro "/>
-                                        <h:selectOneMenu id="Libro" class="form-control" value="#{presBean.objePres.codiLibr}">
-                                            <f:selectItems value="#{librosBean.listLibro}" var="temp" 
-                                                           itemLabel="#{temp.nombLibr}" itemValue="#{temp}"/>
-                                            <f:converter converterId="PooConv"/>
-                                        </h:selectOneMenu>
-                                        <h:message for="tipo" errorClass="badge badge-danger" />
+                                        <h:outputLabel  for="nombLibr" value="Nombre Libro: "/>
+                                        <h:inputText id="nombLibr" class="form-control" value="#{librosBean.objeLibro.nombLibr}" />
+                                        <h:message for="nombLibr" errorClass="badge badge-danger" />
                                     </div>
                                 </fieldset>
-                                                                <fieldset>
+                                <fieldset>
                                     <div class="input-group input-group-xs">
-                                        <h:outputLabel  for="usua" value="Usuario "/>
-                                        <h:selectOneMenu id="usua" class="form-control" value="#{presBean.objePres.codiUsua}">
-                                            <f:selectItems value="#{usuariosBean.listPres}" var="temp" 
-                                                           itemLabel="#{temp.nombUsua}" itemValue="#{temp}"/>
-                                            <f:converter converterId="PooConv"/>
-                                        </h:selectOneMenu>
-                                        <h:message for="tipo" errorClass="badge badge-danger" />
+                                        <h:outputLabel  for="nombAuto" value="Nombre Autor: "/>
+                                        <h:inputText id="nombAuto" class="form-control" value="#{librosBean.objeLibro.autoLibr}" />
+                                        <h:message for="nombAuto" errorClass="badge badge-danger" />
+                                    </div>
+                                </fieldset>
+                                <fieldset>
+                                    <div class="input-group input-group-xs">
+                                        <h:outputLabel  for="geneLibr" value="Genero: "/>
+                                        <h:inputText id="geneLibr" class="form-control" value="#{librosBean.objeLibro.geneLibr}" />
+                                        <h:message for="geneLibr" errorClass="badge badge-danger" />
+                                    </div>
+                                </fieldset>
+                                <fieldset>
+                                    <div class="input-group input-group-xs">
+                                        <h:outputLabel  for="anioLibr" value="Año: "/>
+                                        <h:inputText id="anioLibr" class="form-control" value="#{librosBean.objeLibro.anioLibr}" />
+                                        <h:message for="anioLibr" errorClass="badge badge-danger" />
+                                    </div>
+                                </fieldset>
+                                <fieldset>
+                                    <div class="input-group input-group-xs">
+                                        <h:outputLabel  for="estaLibr" value="Estado Libro: "/>
+                                        <h:inputText id="estaLibr" class="form-control" value="#{librosBean.objeLibro.estaLibr}" />
+                                        <h:message for="estaLibr" errorClass="badge badge-danger" />
                                     </div>
                                 </fieldset>
                             </div>
                             <div class="modal-footer">
                                 <div class="btn-group">
-                                    <ui:fragment rendered="#{presBean.guardando}">
+                                    <ui:fragment rendered="#{librosBean.guardando}">
                                         <h:commandLink class="btn btn-success btn-sm" id="btonTest">
                                             <i class="fa fa-plus"/>
-                                            <p:ajax listener="#{presBean.guar()}" process="@form" 
-                                                    update="@form :contTabl" oncomplete="INIT_OBJE_PRES()" global="true"/>
+                                            <p:ajax listener="#{librosBean.guar()}" process="@form" 
+                                                    update="@form :contTabl" oncomplete="INIT_OBJE_LIBR()" global="true"/>
                                             Guardar
                                         </h:commandLink>
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{not presBean.guardando}">
+                                    <ui:fragment rendered="#{not librosBean.guardando}">
                                         <h:commandLink class="btn btn-primary btn-sm" id="btonEdit">
                                             <i class="fa fa-edit"/>
-                                            <p:ajax listener="#{presBean.edit()}" process="@form" 
-                                                    update="@form :contTabl" oncomplete="INIT_OBJE_PRES()" global="true"/>
+                                            <p:ajax listener="#{librosBean.edit()}" process="@form" 
+                                                    update="@form :contTabl" oncomplete="INIT_OBJE_LIBR()" global="true"/>
                                             Modificar
                                         </h:commandLink>
                                         <!--
@@ -155,7 +172,7 @@ and open the template in the editor.
                                                       pt:data-toggle="confirmation" pt:data-btn-ok-label="Sí" pt:data-btn-ok-icon="fa fa-trash-o"
                                                       pt:data-btn-ok-class="btn-danger btn-xs" pt:data-btn-cancel-label="No" pt:data-btn-cancel-icon="fa fa-mail-forward"
                                                       pt:data-btn-cancel-class="btn-default btn-xs" pt:data-title="¿Está seguro que desea eliminar?"
-                                                      pt:data-on-confirm="elimTipo"><!--data-on-confirm = nombre del comando remoto de eliminar (sin paréntesis)-->
+                                                      pt:data-on-confirm="elimLibr"><!--data-on-confirm = nombre del comando remoto de eliminar (sin paréntesis)-->
                                             <i class="fa fa-times"/> Eliminar
                                         </h:outputLink>
                                     </ui:fragment>
